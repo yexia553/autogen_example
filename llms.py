@@ -16,36 +16,34 @@ azure_gpt4o_mini = {
     "base_url": os.environ.get("OPENAI_API_BASE"),
     "api_type": "azure",
     "api_version": "2024-02-15-preview",
-    "temperature": 0.8
+    "temperature": 0.8,
 }
 
 kimi_8k = {
     "model": "moonshot-v1-8k",
     "api_key": os.environ.get("KIMI_API_KEY"),
     "base_url": os.environ.get("KIMI_API_BASE"),
-    "temperature": 0.8
+    "temperature": 0.8,
 }
 
 # this claude used proexy: https://uniapi.ai/docs/
-claude-3.5-sonnet = {
+claude_35_sonnet = {
     "model": "claude-3-5-sonnet-20240620",
     "api_key": os.environ.get("UNIAPI_API_KEY"),
     "base_url": os.environ.get("UNIAPI_API_BASE"),
-    "temperature": 0.8
+    "temperature": 0.8,
 }
 
 kimi_32k = {
     "model": "moonshot-v1-32k",
     "api_key": os.environ.get("KIMI_API_KEY"),
     "base_url": os.environ.get("KIMI_API_BASE"),
-    "temperature": 0.8
+    "temperature": 0.8,
 }
 
 kimi_128k = {
     "model": "moonshot-v1-128k",
     "api_key": os.environ.get("KIMI_API_KEY"),
     "base_url": os.environ.get("KIMI_API_BASE"),
-    "temperature": 0.8
+    "temperature": 0.8,
 }
-
-
