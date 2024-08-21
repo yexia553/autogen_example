@@ -26,14 +26,6 @@ kimi_8k = {
     "temperature": 0.8,
 }
 
-# this claude used proexy: https://uniapi.ai/docs/
-claude_35_sonnet = {
-    "model": "claude-3-5-sonnet-20240620",
-    "api_key": os.environ.get("UNIAPI_API_KEY"),
-    "base_url": os.environ.get("UNIAPI_API_BASE"),
-    "temperature": 0.8,
-}
-
 kimi_32k = {
     "model": "moonshot-v1-32k",
     "api_key": os.environ.get("KIMI_API_KEY"),
