@@ -1,4 +1,3 @@
-import os
 from autogen.agentchat import (
     GroupChat,
     AssistantAgent,
@@ -13,64 +12,97 @@ initializer = UserProxyAgent(
     name="Init",
 )
 
-hp = AssistantAgent(
-    name="human_proxy",
-    llm_config=False,  # no LLM used for human proxy
-    human_input_mode="ALWAYS",  # always ask for human input
-    description="我是甲方，每次其他Agent回复之后，都要呼叫我，我给出指示后才能呼叫其他Agent继续工作",
+host = AssistantAgent(
+    name="host",
+    llm_config=llms.azure_gpt4o,
+    system_message="你是本次辩论赛的主持人，负责开场白。",
+    description="我是主持人，负责开场陈词。在应该有主持人出场的时候呼叫我",
 )
 
-bk = AssistantAgent(
-    name="bk",
+b1 = AssistantAgent(
+    name="正方一辩",
     llm_config=llms.azure_gpt4o,
     system_message="""
-    你是一个Python开发专家，精通Python语法，善于写出高性能、易维护的Python代码
-    你擅长选择和挑选最佳工具，并尽力避免不必要的重复和复杂性
-    在解决问题时，你会将问题分解成小的问题和改善项，并在每个步骤后建议进行小测试，以确保事情在正确的轨道上
-    如果有任何不清楚或模糊的地方，你总是会要求澄清。你会暂停讨论权衡和实现选项，如果有需要做出选择的情况
-    遵循这一方法非常重要，并尽力教会你的对话者如何做出有效的决策。你避免不必要的道歉，并审查对话，以防止重复早期的错误
-    你非常重视安全，并确保在每个步骤中不做任何可能危及数据或引入新漏洞的事情。每当有潜在的安全风险（例如输入处理、身份验证管理）时，你会进行额外的审查
-    最后，确保所有生成的东西在操作上是可靠的
+    你是正方一辩手，只负责开场陈词。且必须以“尊敬的主持人，评委老师，各位观众，大家好！我是正方一辩”开头。辩论的内容要搞笑一些。你坚决认为：伴侣的钱，就是我的钱。
     """,
-    description="我是Python后端开发，在需要开发后端应用和前期项目细节设计时，请呼叫我",
+    description="我是正方一辩手，只负责开场陈词。在应该由正方一辩出场的时候呼叫我",
 )
 
-ft = AssistantAgent(
-    name="ft",
+b2 = AssistantAgent(
+    name="正方二辩",
     llm_config=llms.azure_gpt4o,
     system_message="""
-    你是Web开发方面的专家，包括CSS、JavaScript、React、Tailwind、Node.JS和Hugo/Markdown。你擅长选择和挑选最好的工具，并尽力避免不必要的重复和复杂性。
-    在提出建议时，你将事情分解为离散的改变，并建议在每个阶段之后进行小测试，以确保事情走在正确的轨道上。
-    编写代码以说明示例，或在对话中被指示时编写代码。如果可以不使用代码回答，这是优选的，并且在需要时你会被要求详细说明。
-    最后，你会生成正确的输出，提供解决当前问题与保持通用性和灵活性之间的正确平衡。
-    如果有任何不明确或模糊的地方，你总是要求澄清。在需要做出选择时，你会停下来讨论权衡和实现选项。
-    遵循这一方法非常重要，并尽力教会你的对话者如何做出有效的决策。你避免不必要的道歉，并审查对话，以防止重复早期的错误。
-    你非常重视安全，并确保在每个步骤中不做任何可能危及数据或引入新漏洞的事情。每当有潜在的安全风险（例如输入处理、身份验证管理）时，你会进行额外的审查
-    最后，确保所有生成的东西在操作上是可靠的。我们会考虑如何托管、管理、监控和维护我们的解决方案。在每一步中，你都会考虑运营方面的问题，并在相关的地方强调它们。
+    你是正方二辩手，只负责攻辩环节。且必须以“尊敬的主持人，评委老师，各位观众，大家好！我是正方二辩”开头。辩论的内容要搞笑一些。你坚决认为：伴侣的钱，就是我的钱。
     """,
-    description="我是前端开发，在需要开发前端应用和前期项目细节设计时，请呼叫我",
+    description="我是正方二辩手，只负责攻辩环节。在应该由正方二辩出场的时候呼叫我",
 )
 
-pm = AssistantAgent(
-    name="pm",
+b3 = AssistantAgent(
+    name="正方三辩",
     llm_config=llms.azure_gpt4o,
     system_message="""
-    你是个人图片托管网站设计方面的资深产品经理，擅长设计和规划此类产品的架构和功能。
-    你重视用户体验和产品性能，并且尽可能在满足功能的前提下保持简洁
-    在提出建议时，你将事情分解为离散的改变，并建议在每个阶段之后进行小测试，以确保事情走在正确的轨道上。
+    你是正方三辩手，只负责攻辩环节。且必须以“尊敬的主持人，评委老师，各位观众，大家好！我是正方三辩”开头。辩论的内容要搞笑一些。你坚决认为：伴侣的钱，就是我的钱。
     """,
-    description="我是产品经理，在产品功能设计、规划时，请呼叫我，在开发过程中需要确认的地方，也请呼叫我",
+    description="我是正方三辩手，只负责攻辩环节。在应该由正方三辩出场的时候呼叫我",
+)
+
+b4 = AssistantAgent(
+    name="正方四辩",
+    llm_config=llms.azure_gpt4o,
+    system_message="""
+    你是正方四辩手，只负责总结陈词。且必须以“尊敬的主持人，评委老师，各位观众，大家好！我是正方四辩”开头。辩论的内容要搞笑一些。你坚决认为：伴侣的钱，就是我的钱。
+    """,
+    description="我是正方四辩手，只负责总结陈词。在应该由正方四辩出场的时候呼叫我",
+)
+
+w1 = AssistantAgent(
+    name="反方一辩",
+    llm_config=llms.azure_gpt4o,
+    system_message="""
+    你是反方一辩手，只负责开场陈词。且必须以“尊敬的主持人，评委老师，各位观众，大家好！我是反方一辩”开头。辩论的内容要搞笑一些。你坚决认为：伴侣的钱，不是我的钱。
+    """,
+    description="我是反方一辩手，只负责开场陈词。在应该由反方一辩出场的时候呼叫我",
+)
+
+w2 = AssistantAgent(
+    name="反方二辩",
+    llm_config=llms.azure_gpt4o,
+    system_message="""
+    你是反方二辩手，只负责攻辩环节。且必须以“尊敬的主持人，评委老师，各位观众，大家好！我是反方二辩”开头。辩论的内容要搞笑一些。你坚决认为：伴侣的钱，不是我的钱。
+    """,
+    description="我是反方二辩手，只负责攻辩环节。在应该由反方二辩出场的时候呼叫我",
+)
+
+w3 = AssistantAgent(
+    name="反方三辩",
+    llm_config=llms.azure_gpt4o,
+    system_message="""
+    你是反方三辩手，只负责攻辩环节。且必须以“尊敬的主持人，评委老师，各位观众，大家好！我是反方三辩”开头。辩论的内容要搞笑一些。你坚决认为：伴侣的钱，不是我的钱。
+    """,
+    description="我是反方三辩手，只负责攻辩环节。在应该由反方三辩出场的时候呼叫我",
+)
+
+w4 = AssistantAgent(
+    name="反方四辩",
+    llm_config=llms.azure_gpt4o,
+    system_message="""
+    你是反方四辩手，只负责总结陈词。且必须以“尊敬的主持人，评委老师，各位观众，大家好！我是反方四辩”开头。辩论的内容要搞笑一些。你坚决认为：伴侣的钱，不是我的钱。
+    """,
+    description="我是反方四辩手，只负责总结陈词。在应该由反方四辩出场的时候呼叫我",
+)
+
+judge = AssistantAgent(
+    name="裁判",
+    llm_config=llms.azure_gpt4o,
+    system_message="""
+    你是裁判，你必须以公正客观的态度评判辩论赛的表现，并给出详细的评语和最终的胜负结果。
+    """,
+    description="我是裁判。在应该由裁判出场的时候呼叫我",
 )
 
 user_proxy = UserProxyAgent(
     name="User",
-    system_message="""开发一个适用于个人的照片展示站点,
-            照片要放在类似又拍云的存储中，以便利用CDN来加速访问，
-            代码最后要部署在一个虚拟机中，数据库使用SQLite，
-            前端使用Vue3，后端使用Python + DRF，
-            要使用懒加载来提升性能，
-            要有一个描述的功能，允许admin为图片添加描述并向用户展示，
-            普通用户不需要登录就能访问和搜索
+    system_message="""我们要进行一场辩论赛，辩论题目为: 伴侣的钱是不是我的钱？
             """,
     code_execution_config=False,
     human_input_mode="NEVER",
@@ -82,19 +114,23 @@ user_proxy = UserProxyAgent(
 
 
 graph_dict = {}
-graph_dict[user_proxy] = [pm, hp]
-graph_dict[pm] = [bk, ft, hp]
-graph_dict[bk] = [pm, ft, hp]
-graph_dict[ft] = [pm, bk, hp]
-graph_dict[hp] = [pm, bk, ft]
+graph_dict[user_proxy] = [host]
+graph_dict[host] = [b1]
+graph_dict[b1] = [w1]
+graph_dict[w1] = [b2]
+graph_dict[b2] = [w2]
+graph_dict[w2] = [b3]
+graph_dict[b3] = [w3]
+graph_dict[b4] = [w4]
+graph_dict[w4] = [judge]
 
-agents = [user_proxy, bk, ft, pm, hp]
+agents = [user_proxy, b1, w1, b2, w2, b3, w3, b4, w4, judge, host]
 
 # create the groupchat
 group_chat = GroupChat(
     agents=agents,
     messages=[],
-    max_round=10,
+    max_round=15,
     allowed_or_disallowed_speaker_transitions=graph_dict,
     allow_repeat_speaker=None,
     speaker_transitions_type="allowed",
@@ -110,13 +146,6 @@ manager = GroupChatManager(
 # initiate the task
 user_proxy.initiate_chat(
     manager,
-    message="""开发一个适用于个人的照片展示站点,
-            照片要放在类似又拍云的存储中，以便利用CDN来加速访问，
-            代码最后要部署在一个虚拟机中，数据库使用SQLite，
-            前端使用Vue3，后端使用Python + DRF，
-            要使用懒加载来提升性能，
-            要有一个描述的功能，允许admin为图片添加描述并向用户展示，
-            普通用户不需要登录就能访问和搜索
-            """,
+    message="""我们要进行一场辩论赛，辩论题目为: 伴侣的钱是不是我的钱？""",
     clear_history=True,
 )
