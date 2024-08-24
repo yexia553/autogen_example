@@ -6,7 +6,7 @@ azure_gpt4o = {
     "api_key": os.environ.get("OPENAI_API_KEY"),
     "base_url": os.environ.get("OPENAI_API_BASE"),
     "api_type": "azure",
-    "api_version": "2023-03-15-preview",
+    "api_version": "2024-02-15-preview",
     "temperature": 0.9,
 }
 
