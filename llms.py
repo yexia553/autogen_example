@@ -39,13 +39,3 @@ kimi_128k = {
     "base_url": os.environ.get("KIMI_API_BASE"),
     "temperature": 0.8,
 }
-
-
-UNIAPI_CONFIG_LIST = [
-    {
-        "model": "moonshot-v1-8k",
-        "api_key": os.environ.get("KIMI_API_KEY"),
-        "base_url": os.environ.get("KIMI_API_BASE"),
-        "temperature": 0.8,
-    },
-]

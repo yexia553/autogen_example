@@ -1,12 +1,20 @@
+"""
+本代码用于展示如何自定义一个模型，本模型基于UniAPI，
+但是任何支持HTTPS调用的大模型都可以套用以下代码
+"""
+
+from autogen.agentchat import AssistantAgent, UserProxyAgent
+from autogen.oai.openai_utils import config_list_from_json
 from types import SimpleNamespace
 import requests
+import os
 
 
 class UniAPIModelClient:
     def __init__(self, config, **kwargs):
         print(f"CustomModelClient config: {config}")
         self.api_key = config.get("api_key")
-        self.api_url = "https://api.uniapi.io/v1/chat/completions"
+        self.api_url = "https://api.uniapi.me/v1/chat/completions"
         self.model = config.get("model", "gpt-3.5-turbo")
         self.max_tokens = config.get("max_tokens", 1200)
         self.temperature = config.get("temperature", 0.8)
@@ -64,3 +72,24 @@ class UniAPIModelClient:
     def get_usage(response):
         # Implement usage tracking if available from your API
         return {}
+
+
+config_list_custom = config_list_from_json(
+    "UNIAPI_CONFIG_LIST.json",
+    filter_dict={"model_client_cls": ["UniAPIModelClient"]},
+)
+
+assistant = AssistantAgent("assistant", llm_config={"config_list": config_list_custom})
+user_proxy = UserProxyAgent(
+    "user_proxy",
+    code_execution_config={
+        "work_dir": "coding",
+        "use_docker": False,
+    },
+)
+
+assistant.register_model_client(model_client_cls=UniAPIModelClient)
+user_proxy.initiate_chat(
+    assistant,
+    message="Write python code to print hello world",
+)
