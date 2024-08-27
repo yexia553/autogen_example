@@ -39,3 +39,10 @@ kimi_128k = {
     "base_url": os.environ.get("KIMI_API_BASE"),
     "temperature": 0.8,
 }
+
+doubao_pro_32k = {
+    "model": os.environ.get("DOUBAO_MODEL_NAME"),
+    "api_key": os.environ.get("DOUBAO_API_KEY"),
+    "base_url": os.environ.get("DOUBAO_API_BASE"),
+    "temperature": 0.8,
+}
